@@ -1,0 +1,55 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
+
+// Set your brand colors
+$blue: #3da9fc;
+// $green-dark: #143109;
+// $green: #aaae7f;
+// $green-light: #d0d6b3;
+// $grey-light: #f7f7f7;
+// $grey-dark: #efefef;
+
+// Update Bulma's global variables
+$family-sans-serif: "Montserrat", sans-serif;
+// $grey-dark: $grey-dark;
+// $grey-light: $grey-light;
+$primary: $blue;
+$link: $blue;
+// $widescreen-enabled: false;
+// $fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+// $body-background-color: white;
+// $control-border-width: 2px;
+// $input-border-color: transparent;
+// $input-shadow: none;
+
+.modal-card {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+    -ms-overflow-y: visible;
+    overflow-y: visible;
+}
+
+;
+
+
+// Import only what you need from Bulma
+@import "../node_modules/bulma/bulma.sass";
+@import "bulma-steps.sass";
+/*
+@import "../node_modules/bulma/sass/utilities/_all.sass";
+@import "../node_modules/bulma/sass/base/_all.sass";
+@import "../node_modules/bulma/sass/elements/button.sass";
+@import "../node_modules/bulma/sass/elements/container.sass";
+@import "../node_modules/bulma/sass/elements/title.sass";
+@import "../node_modules/bulma/sass/form/_all.sass";
+@import "../node_modules/bulma/sass/components/navbar.sass";
+@import "../node_modules/bulma/sass/layout/hero.sass";
+@import "../node_modules/bulma/sass/layout/section.sass";
+
+*/
