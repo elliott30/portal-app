@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 // we will create these in the next step
-import { getHostnameDataBySubdomain, getSubdomainPaths } from "lib/db.ts";
+import { getHostnameDataBySubdomain, getSubdomainPaths } from "../../../lib/db";
 
 // Our types for the site data
 export interface Props {
@@ -43,7 +43,7 @@ export async function getStaticPaths() {
 }
 
 // Getting data to display on each custom subdomain
-export async function getStaticProps({ params: { site } }) {
+export async function getStaticProps({ params: { site } }: any) {
   const sites = await getHostnameDataBySubdomain(site)
 
   return {

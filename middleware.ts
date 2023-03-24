@@ -18,9 +18,9 @@ export default async function middleware(req: NextRequest) {
   // process.env.VERCEL === "1" indicates that the app is deployed on Vercel
   const currentHost =
     process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
-      ? hostname
+      ? hostname!
         .replace(`.buildwithnext.com`, "")
-      : hostname.replace(`.localhost:3000`, "");
+      : hostname!.replace(`.localhost:3000`, "");
 
 
 
@@ -33,7 +33,7 @@ export default async function middleware(req: NextRequest) {
   } else {
     // console.log('URL 2', req.nextUrl.href)
     // rewrite to the current subdomain under the pages/sites folder
-    url.pathname = `/_sites/${data.subdomain}${url.pathname}`
+    url.pathname = `/_sites/${data!.subdomain}${url.pathname}`
   }
 
   return NextResponse.rewrite(url)
