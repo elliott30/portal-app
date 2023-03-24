@@ -23,10 +23,14 @@ export default async function middleware(req: NextRequest) {
 
   const data = await getHostnameDataOrDefault(currentHost);
 
-  // Redirect to a 404 page if an unknown value is provided
-  if (!data) {
-    return NextResponse.redirect('/404', 404);
-  }
+// Show the 404 page if an unknown value is provided
+if (!data) {
+  url.pathname = '/404';
+  return NextResponse.rewrite(url);
+}
+
+
+
 
   // If the subdomain is 'www', redirect to the index page outside the _sites folder
   if (data.subdomain === 'www') {
