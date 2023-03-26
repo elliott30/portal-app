@@ -17,6 +17,16 @@ export default function Layout({ children }: Props) {
   )
 }
 
+export function LayoutPortal({ children }: Props) {
+  return (
+    <>
+      <Header />
+      <main>{children}</main>
+      <Footer />
+    </>
+  )
+}
+
 export function LayoutFullPage({ children }: Props) {
   //Adds the bulma class for fixed navbar to body of pages with this layout only
   useEffect(() => {

@@ -1,18 +1,32 @@
-import { SessionProvider } from "next-auth/react"
-import '../css/mystyles.css'
+// pages/_app.tsx
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { SessionProvider } from "next-auth/react";
+import { NextPage } from "next";
+import { AppProps } from "next/app";
+import '../css/mystyles.css';
 
-import type { AppProps } from "next/app"
-import type { Session } from "next-auth"
+type MyAppProps = AppProps & {
+  Component: NextPage;
+};
 
-// Use of the <SessionProvider> is mandatory to allow components that call
-// `useSession()` anywhere in your application to access the `session` object.
-export default function App({
-  Component,
-  pageProps: { session, ...pageProps },
-}: AppProps<{ session: Session }>) {
+function MyApp({ Component, pageProps }: MyAppProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const isSignInPage = router.pathname.startsWith("/auth/signin");
+    const subdomain = window.location.hostname.split(".")[0];
+
+    if (isSignInPage && subdomain !== "www" && subdomain !== "accountid") {
+      router.replace("/auth/signin-client");
+    }
+  }, [router]);
+
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={pageProps.session}>
       <Component {...pageProps} />
     </SessionProvider>
-  )
+  );
 }
+
+export default MyApp;

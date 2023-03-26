@@ -18,6 +18,11 @@ const hostnamesDB = [
       description: 'Subdomain only',
       subdomain: 'test3',
     },
+    {
+      name: 'This is the www site',
+      description: 'Main index page',
+      subdomain: 'www',
+    },
   ]
   const DEFAULT_HOST = hostnamesDB.find((h) => h.defaultForPreview)
   

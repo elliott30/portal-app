@@ -13,9 +13,6 @@ export default async function middleware(req: NextRequest) {
 
   // If localhost, assign the host value manually
   // If prod, get the custom domain/subdomain value by removing the root URL
-  // (in the case of "subdomain-3.localhost:3000", "localhost:3000" is the root URL)
-  // process.env.NODE_ENV === "production" indicates that the app is deployed to a production environment
-  // process.env.VERCEL === "1" indicates that the app is deployed on Vercel
   const currentHost =
     process.env.NODE_ENV === 'production' && process.env.VERCEL === '1'
       ? hostname!.replace(`.crm-sites.com`, '')
@@ -23,18 +20,16 @@ export default async function middleware(req: NextRequest) {
 
   const data = await getHostnameDataOrDefault(currentHost);
 
-// Show the 404 page if an unknown value is provided
-if (!data) {
-  url.pathname = '/404';
-  return NextResponse.rewrite(url);
-}
+  // Show the 404 page if an unknown value is provided
+  if (!data) {
+    url.pathname = '/404';
+    return NextResponse.rewrite(url);
+  }
 
-
-
-
-  // If the subdomain is 'www', redirect to the index page outside the _sites folder
+  // If the subdomain is 'www', rewrite the URL to the index page outside the _sites folder
   if (data.subdomain === 'www') {
-    return NextResponse.redirect('/');
+    // No need to modify the url.pathname since it's already pointing to the desired location
+    return NextResponse.rewrite(url);
   }
 
   // Prevent security issues – users should not be able to canonically access
