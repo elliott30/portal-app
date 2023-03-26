@@ -1,80 +1,43 @@
-import { getProviders, signIn, getCsrfToken, useSession } from "next-auth/react"
-// import styles from '../../styles/Auth.module.scss'
-import { InferGetServerSidePropsType } from 'next'
-// import { FaGithub, FaTwitter, FaGoogle } from "react-icons/fa";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import { CtxOrReq } from "next-auth/client/_utils";
-import Layout from "../../components/layouts";
+import { useEffect, useState } from 'react';
+import { signIn } from 'next-auth/react';
 
+export default function SignInAdmin() {
+    const [isWWWorNoSubdomain, setIsWWWorNoSubdomain] = useState(false);
 
-
-const SignIn = ({ providers, csrfToken }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-    const { data: session } = useSession()
-    const router = useRouter()
-    console.log(providers);
-
-    /*
     useEffect(() => {
-        if (session) {
-            router.push('/')
-        }
-    }, [session])
-    */
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+
+        setIsWWWorNoSubdomain(subdomain === 'www' || subdomain === 'localhost' || subdomain === '');
+    }, []);
+
     return (
-        <>
-            <section className="hero is-primary">
-                <div className="hero-body">
-                    <p className="title">Sign in to continue</p>
-                    <p className="subtitle">
-                        Use your demo HubSpot account only.
-                    </p>
-                </div>
-            </section><>
-                <section className="section content">
-                    <h1>SignIn to Continue</h1>
-
-                    <div className="">
-
-                        {providers ? (Object.values(providers).map((provider, i) => {
-                            if (provider.id !== 'email') {
-                                return (
-                                    <div key={provider.name} className="">
-                                        <a
-                                            href={`/api/auth/signin`}
-                                            className="button is-primary"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                signIn("hubspot");
-                                            }}
-                                        >
-                                            Login with HubSpot
-                                        </a>
-                                    </div>
-                                );
-                            }
-                        }
-                        )) : ('')}
-
-
-
+        <section className="hero is-fullheight">
+            <div className="hero-body">
+                <div className="container">
+                    <div className="columns is-centered">
+                        <div className="column is-4">
+                            <h1 className="title">Welcome to MyApp</h1>
+                            <p>Please sign in to access the Admin Dashboard.</p>
+                        </div>
+                        <div className="column is-4">
+                            <div className="box has-background-white is-flex is-flex-direction-column is-justify-content-center is-align-items-center has-text-centered has-text-dark">
+                                <h2 className="title is-4 mb-5">Sign In</h2>
+                                <button
+                                    className="button is-primary is-fullwidth"
+                                    onClick={() =>
+                                        signIn(isWWWorNoSubdomain ? 'hubspot' : 'magic-link')
+                                    }
+                                >
+                                    {isWWWorNoSubdomain
+                                        ? 'Sign in with HubSpot'
+                                        : 'Sign in with Magic Link'}
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
-                </section>
-
-            </>
-        </>
-
-    )
+                </div>
+            </div>
+        </section>
+    );
 }
-
-
-export const getServerSideProps = async (context: CtxOrReq | undefined) => {
-    const providers = await getProviders()
-    const csrfToken = await getCsrfToken(context)
-    return {
-        props: { providers, csrfToken },
-    }
-}
-
-export default SignIn

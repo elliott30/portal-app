@@ -11,16 +11,7 @@ type MyAppProps = AppProps & {
 };
 
 function MyApp({ Component, pageProps }: MyAppProps) {
-  const router = useRouter();
 
-  useEffect(() => {
-    const isSignInPage = router.pathname.startsWith("/auth/signin");
-    const subdomain = window.location.hostname.split(".")[0];
-
-    if (isSignInPage && subdomain !== "www" && subdomain !== "accountid") {
-      router.replace("/auth/signin-client");
-    }
-  }, [router]);
 
   return (
     <SessionProvider session={pageProps.session}>

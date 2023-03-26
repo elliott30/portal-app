@@ -58,7 +58,7 @@ export default function Header() {
                     className="button is-primary"
                     onClick={(e) => {
                       e.preventDefault()
-                      signIn("github")
+                      signIn("hubspot")
                     }}
                   >
                     Login with HubSpot

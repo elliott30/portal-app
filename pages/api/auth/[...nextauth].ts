@@ -1,5 +1,9 @@
 import NextAuth, { NextAuthOptions } from "next-auth"
 import HubspotProvider from "next-auth/providers/hubspot"
+import EmailProvider from "next-auth/providers/email";
+import { Session, Account, Profile, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
+
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
 
 export const authOptions: NextAuthOptions = {
@@ -7,45 +11,72 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt"
   },
-  adapter: FirestoreAdapter({
-    apiKey: process.env.FIREBASE_API_KEY,
-    appId: process.env.FIREBASE_APP_ID,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
-  }),
   providers: [
     HubspotProvider({
-      clientId: process.env.HUBSPOT_CLIENT_ID!,
-      clientSecret: process.env.HUBSPOT_CLIENT_SECRET!,
-      authorization: { params: { scope: "oauth content crm.objects.contacts.read" } },
-      
+      clientId: process.env.HUBSPOT_ID!,
+      clientSecret: process.env.HUBSPOT_SECRET!,
+      authorization: { params: { scope: "oauth crm.lists.read crm.objects.contacts.read" } },
     }),
-  ],
+    /*
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST!,
+        port: parseInt(process.env.EMAIL_SERVER_PORT!, 10),
+        auth: {
+          user: process.env.EMAIL_SERVER_USER!,
+          pass: process.env.EMAIL_SERVER_PASSWORD!,
+        },
+      },
+      from: process.env.EMAIL_FROM!,
+    }),
+    */
+  ],  
   theme: {
     colorScheme: "light",
   },
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      const isAllowedToSignIn = true
-      // if (user && user.email && user.email.endsWith('@hubspot.com')) {
-        //if (user && user.email && user.email === 'echapman@hubspot.com') {
-        if (user) {
-
-        return true
-      } else {
-        // Return false to display a default error message
-        return false
-        // Or you can return a URL to redirect to:
-        // return '/unauthorized'
+    async jwt({ token, user, account, profile, isNewUser }: { token: JWT; user?: User; account?: Account | null; profile?: Profile; isNewUser?: boolean }) {
+      if (user) {
+        // If the user logs in via Hubspot, assign the "admin" role
+        if (account?.provider === "hubspot") {
+          token.role = "admin";
+        }
+        // If the user logs in via Email, assign the "user" role
+        else if (account?.provider === "email") {
+          token.role = "user";
+        }
       }
-    }
+      return token;
+    },
+  
+    async session({ session, user, token }: { session: Session; user: User; token: JWT }) {
+      // Add the role to the session object
+      session.role = token.role;
+      return session;
+    },
+  
+    async signIn({ user, account, profile, email, credentials }:
+      { user: User | User; account: Account | null; profile?: Profile; email?: { verificationRequest?: boolean }; credentials?: Record<string, unknown>; }) {
+      if (account?.provider === "hubspot") {
+        // Check if the email domain is allowed
+        // You can replace this with your own condition, e.g., user.email === 'allowed@example.com'
+        if (user.email && user.email.endsWith('@hubspot.com')) {
+          return true;
+        }
+      } else if (account?.provider === "email") {
+        // Allow all users who sign in with email
+        return true;
+      }
+  
+      // If the conditions above are not met, disallow the sign-in
+      return false;
+    },
   },
+  
   pages: {
-    signIn: "/auth/signin-admin",
-  },
+    signIn: "/auth/signin",
+  }
+  
 }
 
 export default NextAuth(authOptions);
